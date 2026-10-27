@@ -5,7 +5,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import { debug, setFailed } from "@actions/core";
-import github from "@actions/github";
+import * as github from "@actions/github";
 import ColorContrastChecker from "color-contrast-checker";
 import { info } from "console";
 import Hjson from "hjson";
@@ -132,9 +132,9 @@ const findComment = async (octokit, issueNumber, owner, repo, commenter) => {
 const upsertComment = async (octokit, props) => {
   let resp;
   if (props.comment_id !== undefined) {
-    resp = await octokit.issues.updateComment(props);
+    resp = await octokit.rest.issues.updateComment(props);
   } else {
-    resp = await octokit.issues.createComment(props);
+    resp = await octokit.rest.issues.createComment(props);
   }
   return resp.data.html_url;
 };
@@ -157,7 +157,7 @@ const addReview = async (
   reviewState,
   reason,
 ) => {
-  await octokit.pulls.createReview({
+  await octokit.rest.pulls.createReview({
     owner,
     repo,
     pull_number: prNumber,
@@ -176,7 +176,7 @@ const addReview = async (
  * @param {string[]} labels Labels to add.
  */
 const addLabel = async (octokit, prNumber, owner, repo, labels) => {
-  await octokit.issues.addLabels({
+  await octokit.rest.issues.addLabels({
     owner,
     repo,
     issue_number: prNumber,
@@ -194,7 +194,7 @@ const addLabel = async (octokit, prNumber, owner, repo, labels) => {
  * @param {string} label Label to add or remove.
  */
 const removeLabel = async (octokit, prNumber, owner, repo, label) => {
-  await octokit.issues.removeLabel({
+  await octokit.rest.issues.removeLabel({
     owner,
     repo,
     issue_number: prNumber,
@@ -213,7 +213,7 @@ const removeLabel = async (octokit, prNumber, owner, repo, label) => {
  * @param {boolean} add Whether to add or remove the label.
  */
 const addRemoveLabel = async (octokit, prNumber, owner, repo, label, add) => {
-  const res = await octokit.pulls.get({
+  const res = await octokit.rest.pulls.get({
     owner,
     repo,
     pull_number: prNumber,
@@ -321,7 +321,7 @@ export const run = async (prNumber) => {
 
     // Retrieve the PR diff and preview-theme comment.
     debug("Retrieve PR diff...");
-    const res = await octokit.pulls.get({
+    const res = await octokit.rest.pulls.get({
       owner,
       repo,
       pull_number: pullRequestId,
