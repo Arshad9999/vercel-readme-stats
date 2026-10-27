@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import {
   getByTestId,
   queryAllByTestId,
@@ -21,6 +22,14 @@ const stats = {
 };
 
 describe("Test renderStatsCard", () => {
+  // Keep date-sensitive translation snapshots stable across calendar years.
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2022-06-01T12:00:00Z"));
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   it("should render correctly", () => {
     document.body.innerHTML = renderStatsCard(stats);
 

@@ -5,7 +5,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import { debug, setFailed } from "@actions/core";
-import github from "@actions/github";
+import * as github from "@actions/github";
 import { RequestError } from "@octokit/request-error";
 import { getGithubToken, getRepoInfo } from "./helpers.js";
 
@@ -149,13 +149,13 @@ const run = async () => {
     for (const prNumber of staleThemePRsNumbers) {
       debug(`Closing #${prNumber} because it is stale...`);
       if (!dryRun) {
-        await octokit.issues.createComment({
+        await octokit.rest.issues.createComment({
           owner,
           repo,
           issue_number: prNumber,
           body: CLOSING_COMMENT,
         });
-        await octokit.pulls.update({
+        await octokit.rest.pulls.update({
           owner,
           repo,
           pull_number: prNumber,
